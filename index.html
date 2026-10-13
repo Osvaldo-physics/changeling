@@ -685,6 +685,16 @@ body.calm #fx{display:none}
 #modeSeg{flex:0 0 auto}
 @media (max-width:640px){ #glossBtn{display:none} .brand{font-size:14px} }
 body.easy *{font-style:normal!important}
+
+@media print{html,body{background:#fff!important}.vignette,#fx{display:none!important}}
+
+/* impressão: preenchimentos feitos com borda (sempre impressos, mesmo sem "gráficos de fundo") */
+.sheet,.sheet *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sd i{box-sizing:border-box}
+.sd i.on{border:5.5px solid #1a2a1f}
+.sd i.bn{border:5.5px solid #4f7a4a}
+.sbox i{box-sizing:border-box}
+.sbox i.ts{border:3px double #4f7a4a}
 </style>
 </head>
 <body>
@@ -1659,7 +1669,7 @@ const costPlain = c => String(c||'').replace(/Glamour/g,'Encanto').replace(/FV/g
 const MPLAIN = {mantle:'Prestígio na Corte',hollow:'Refúgio na Sebe',touchstone:'Âncora extra',token:'Objeto encantado',goodwill:'Amizade com outra Corte',hedgesense:'Senso da Sebe',faemount:'Montaria da Sebe',safeplace:'Esconderijo',striking:'Aparência marcante'};
 const mname = k => MPLAIN[k] || (MERITS.find(m=>m.id===k)||{n:k}).n;
 const CONCEPT_NOUN = {nurse:'Profissional de saúde',mechanic:'Mecânico',student:'Estudante',cop:'Ex-segurança',artist:'Artista',seller:'Vendedor',teacher:'Professor',athlete:'Atleta',street:'Sobrevivente das ruas',tech:'Programador',rural:'Gente da roça',kid:'Criança levada cedo'};
-const deArt = k => (k||'').replace(/^o /,'do ').replace(/^a /,'da ');
+const deArt = k => (k||'').replace(/^o /i,'ao ').replace(/^a /i,'à ');
 const REG_COMP = {crown:'mirror',jewels:'mirror',mirror:'jewels',shield:'sword',steed:'shield',sword:'shield'};
 
 function blank(){
@@ -2003,7 +2013,7 @@ const BEATS = {
    auto:()=>rnd(GEN.names)},
   {id:'bg', has:()=>!!st.bg, ask:()=>`E o que você fazia da vida? Do que você vivia?`,
    ui:()=>`<div class="choices g3">${BACKGROUNDS.map((b,i)=>opt('bg',b[0],b[1],'',i+1)).join('')}</div>`,
-   pick:v=>{ st.bg=v; if(!st.before) st.before=`Vivia de ${lc(BG_BY[v][1])}.`; }, said:()=>`${esc(BG_BY[st.bg]?BG_BY[st.bg][1]:'—')}.`,
+   pick:v=>{ st.bg=v; if(!st.before) st.before= v==='kid' ? 'Era só uma criança quando foi levado.' : `Vivia de ${lc(BG_BY[v][1])}.`; }, said:()=>`${esc(BG_BY[st.bg]?BG_BY[st.bg][1]:'—')}.`,
    react:()=>`Isso não some. As mãos lembram, mesmo quando a cabeça prefere esquecer.`,
    auto:()=>rnd(BACKGROUNDS)[0]},
   {id:'asp', has:()=>st.asp.filter(a=>a.trim()).length>=3, ask:()=>`E <b>o que você quer agora?</b> Me diga três coisas — duas para logo, uma para a vida.<span class="hint">Cumprir um objetivo te dá experiência no jogo.</span>`,
@@ -2477,7 +2487,7 @@ function sheetHTML(s){
       </div>
     </div>
     <div class="sh-sec">Pactos · Contratos</div>
-    <div class="sh-two">${[0,1].map(col=>`<div>${s.contracts.map(cById).filter((_,i)=>i%2===col).map(c=>`<div class="sh-k"><b>${c.n}</b> <em>(${GROUP_NAMES[c.g]}, ${c.t==='r'?'forte':'comum'})</em> — custa ${costPlain(c.c)}; rolagem ${c.p}.<br><i>Truque:</i> ${plain(c.l)}</div>`).join('')}</div>`).join('')}</div>
+    <div class="sh-two">${[0,1].map(col=>`<div>${s.contracts.map(cById).filter((_,i)=>i%2===col).map(c=>`<div class="sh-k"><b>${c.n}</b> <em>(${GROUP_NAMES[c.g]}, ${c.t==='r'?'forte':'comum'})</em> — custa ${costPlain(c.c)}${c.p&&c.p!=='—'?`; rolagem ${c.p}`:''}.<br><i>Truque:</i> ${plain(c.l)}</div>`).join('')}</div>`).join('')}</div>
     <div class="sh-sec">Dons e ponto fraco</div>
     <div class="sh-two sh-small">
       <div>${se?`<p style="margin:0"><b>Dom (${se.n}):</b> ${SEEMING_TALK[s.seeming].gift}</p><p style="margin:6px 0 0"><b>Ponto fraco:</b> ${SEEMING_TALK[s.seeming].flaw}</p>`:''}</div>
